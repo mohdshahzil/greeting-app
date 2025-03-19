@@ -1,4 +1,4 @@
-"use client" // Enables client-side rendering in Next.js
+"use client"
 
 import type React from "react"
 
@@ -7,34 +7,29 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-import { submitName } from "./actions" // Importing server action to handle name submission
+import { submitName } from "./actions"
 
 export default function Home() {
-  // State to store the input name
   const [name, setName] = useState<string>("")
-  // State to store the generated greeting message
   const [greeting, setGreeting] = useState<string>("")
-  // State to handle submission loading state
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
 
-  // Handles form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!name.trim()) return // Prevent empty submissions
+    if (!name.trim()) return
 
-    setIsSubmitting(true) // Show loading state
+    setIsSubmitting(true)
     try {
-      const response = await submitName(name) // Call server action to get the greeting
-      setGreeting(response) // Set the received greeting
+      const response = await submitName(name)
+      setGreeting(response)
     } finally {
-      setIsSubmitting(false) // Reset loading state
+      setIsSubmitting(false)
     }
   }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-24">
       <div className="w-full max-w-2xl mx-auto space-y-8">
-        {/* Card for name input and greeting generation */}
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Greeting Generator</CardTitle>
@@ -62,7 +57,6 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Display generated greeting if available */}
         {greeting && (
           <Card className="bg-primary/5">
             <CardContent className="pt-6">
@@ -71,7 +65,6 @@ export default function Home() {
           </Card>
         )}
 
-        {/* Explanation Section */}
         <Card>
           <CardHeader>
             <CardTitle>How It Works</CardTitle>
@@ -79,71 +72,334 @@ export default function Home() {
           </CardHeader>
           <CardContent>
             <Accordion type="single" collapsible className="w-full">
-              {/* Accordion Item - Server Actions Explanation */}
               <AccordionItem value="server-actions">
                 <AccordionTrigger>Server Actions</AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm text-muted-foreground">
-                    Server Actions are a Next.js feature that allows you to define asynchronous functions that run on
-                    the server. In this app, we use a server action to process the name input and return a greeting.
-                    The action is defined in <code className="text-xs bg-muted p-1 rounded">app/actions.ts</code> and
-                    imported into the client component. When you submit the form, the client component calls this server
-                    action, which processes the data on the server and returns a response.
-                  </p>
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    <p>
+                      Server Actions are a Next.js feature that allows you to define asynchronous functions that run on
+                      the server. In this app, we use a server action to process the name input and return a greeting.
+                    </p>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">Server Action Implementation:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`'use server'
+
+export async function submitName(name: string): Promise<string> {
+  // Simulate a delay to show loading state
+  await new Promise((resolve) => setTimeout(resolve, 500))
+
+  // Process the name (in a real app, you might do more complex operations here)
+  const sanitizedName = name.trim()
+
+  // Return the greeting
+  return \`Hello \${sanitizedName}!\`
+}`}
+                      </pre>
+                    </div>
+
+                    <p>
+                      The <code className="text-xs bg-muted p-1 rounded">'use server'</code> directive at the top of the
+                      file marks all exports as server functions. These functions can be imported directly into client
+                      components and called like regular async functions.
+                    </p>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">Client-side Usage:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`// Import the server action
+import { submitName } from "./actions"
+
+// Use in a client component
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  if (!name.trim()) return
+
+  setIsSubmitting(true)
+  try {
+    const response = await submitName(name)
+    setGreeting(response)
+  } finally {
+    setIsSubmitting(false)
+  }
+}`}
+                      </pre>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Accordion Item - Shadcn UI Components Explanation */}
               <AccordionItem value="shadcn-ui">
                 <AccordionTrigger>Shadcn UI Components</AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm text-muted-foreground">
-                    This application uses several components from the Shadcn UI library:
-                    <ul className="list-disc pl-5 mt-2 space-y-1">
-                      <li>
-                        <strong>Input:</strong> For the name input field
-                      </li>
-                      <li>
-                        <strong>Button:</strong> For the submit button
-                      </li>
-                      <li>
-                        <strong>Card:</strong> For containing the form and explanation sections
-                      </li>
-                      <li>
-                        <strong>Accordion:</strong> For the collapsible explanation sections
-                      </li>
-                    </ul>
-                    Shadcn UI provides accessible, customizable components built on Radix UI primitives and styled with
-                    Tailwind CSS.
-                  </p>
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    <p>
+                      This application uses several components from the Shadcn UI library, which provides accessible,
+                      customizable components built on Radix UI primitives and styled with Tailwind CSS.
+                    </p>
+
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-medium mb-2">Input Component:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`import { Input } from "@/components/ui/input"
+
+<Input
+  id="name"
+  type="text"
+  placeholder="Enter your name"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+  disabled={isSubmitting}
+/>`}
+                        </pre>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">Button Component:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`import { Button } from "@/components/ui/button"
+
+<Button type="submit" disabled={isSubmitting}>
+  {isSubmitting ? "Submitting..." : "Generate Greeting"}
+</Button>`}
+                        </pre>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">Card Component:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+
+<Card>
+  <CardHeader>
+    <CardTitle>Title</CardTitle>
+    <CardDescription>Description</CardDescription>
+  </CardHeader>
+  <CardContent>
+    {/* Content */}
+  </CardContent>
+</Card>`}
+                        </pre>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">Accordion Component:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+
+<Accordion type="single" collapsible>
+  <AccordionItem value="item-1">
+    <AccordionTrigger>Section Title</AccordionTrigger>
+    <AccordionContent>
+      {/* Content */}
+    </AccordionContent>
+  </AccordionItem>
+</Accordion>`}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Accordion Item - Next.js 15.1 Features Explanation */}
               <AccordionItem value="nextjs-features">
                 <AccordionTrigger>Next.js 15.1 Features</AccordionTrigger>
                 <AccordionContent>
-                  <p className="text-sm text-muted-foreground">
-                    This application leverages several key features from Next.js 15.1:
-                    <ul className="list-disc pl-5 mt-2 space-y-1">
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    <p>This application leverages several key features from Next.js 15.1:</p>
+
+                    <div className="space-y-6">
+                      <div>
+                        <h4 className="font-medium mb-2">Server Actions:</h4>
+                        <p className="mb-2">
+                          Next.js 15.1 enhances server actions with improved performance and reliability.
+                        </p>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`// app/actions.ts
+'use server'
+
+export async function submitName(name: string): Promise<string> {
+  // Server-side code here
+}`}
+                        </pre>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">App Router Structure:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`app/
+├── actions.ts      # Server actions
+├── globals.css     # Global styles
+├── layout.tsx      # Root layout
+└── page.tsx        # Home page component`}
+                        </pre>
+                        <p className="mt-2">
+                          The App Router uses a file-based routing system where folders define routes and special files
+                          like page.tsx define UI.
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">Client and Server Components:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`// Client Component
+'use client'
+import { useState } from 'react'
+
+// Server Component (default)
+// No 'use client' directive needed`}
+                        </pre>
+                        <p className="mt-2">
+                          Next.js 15.1 improves the integration between client and server components, allowing for more
+                          efficient rendering and data fetching.
+                        </p>
+                      </div>
+
+                      <div>
+                        <h4 className="font-medium mb-2">Enhanced Forms:</h4>
+                        <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                          {`// Client-side form handling with server action
+<form onSubmit={handleSubmit} className="space-y-4">
+  {/* Form fields */}
+  <Button type="submit">Submit</Button>
+</form>
+
+// handleSubmit function
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  const response = await submitName(name) // Server action
+  setGreeting(response)
+}`}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="state-management">
+                <AccordionTrigger>State Management</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    <p>
+                      This application uses React's useState hook for managing component state. Here's how the state is
+                      implemented:
+                    </p>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">State Initialization:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`import { useState } from "react"
+
+// State for the name input
+const [name, setName] = useState<string>("")
+
+// State for the greeting message
+const [greeting, setGreeting] = useState<string>("")
+
+// State for tracking submission status
+const [isSubmitting, setIsSubmitting] = useState<boolean>(false)`}
+                      </pre>
+                    </div>
+
+                    <p>The application uses three state variables:</p>
+                    <ul className="list-disc pl-5 space-y-1">
                       <li>
-                        <strong>Server Actions:</strong> For processing form submissions on the server
+                        <strong>name:</strong> Stores the current value of the input field
                       </li>
                       <li>
-                        <strong>App Router:</strong> For simplified routing and layout management
+                        <strong>greeting:</strong> Stores the response from the server action
                       </li>
                       <li>
-                        <strong>Client and Server Components:</strong> The page is a client component to manage state,
-                        while the server action runs on the server
-                      </li>
-                      <li>
-                        <strong>TypeScript Integration:</strong> For type safety throughout the application
-                      </li>
-                      <li>
-                        <strong>Enhanced Forms:</strong> Using Next.js form handling capabilities
+                        <strong>isSubmitting:</strong> Tracks whether a submission is in progress to show loading states
                       </li>
                     </ul>
-                  </p>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">State Updates:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`// Update name state when input changes
+<Input
+  value={name}
+  onChange={(e) => setName(e.target.value)}
+/>
+
+// Update greeting and isSubmitting states during form submission
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault()
+  if (!name.trim()) return
+
+  setIsSubmitting(true)
+  try {
+    const response = await submitName(name)
+    setGreeting(response)
+  } finally {
+    setIsSubmitting(false)
+  }
+}`}
+                      </pre>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+
+              <AccordionItem value="responsive-design">
+                <AccordionTrigger>Responsive Design</AccordionTrigger>
+                <AccordionContent>
+                  <div className="space-y-4 text-sm text-muted-foreground">
+                    <p>
+                      This application uses Tailwind CSS for responsive design. Here are some key responsive design
+                      patterns used:
+                    </p>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">Responsive Padding:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`<main className="flex min-h-screen flex-col items-center justify-between p-4 md:p-24">
+  {/* Content */}
+</main>`}
+                      </pre>
+                      <p className="mt-2">
+                        The main container uses <code className="text-xs bg-muted p-1 rounded">p-4</code> (1rem padding)
+                        on mobile devices and
+                        <code className="text-xs bg-muted p-1 rounded">md:p-24</code> (6rem padding) on medium screens
+                        and larger.
+                      </p>
+                    </div>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">Max Width Container:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`<div className="w-full max-w-2xl mx-auto">
+  {/* Content */}
+</div>`}
+                      </pre>
+                      <p className="mt-2">
+                        The content container has a maximum width of 42rem (max-w-2xl) to ensure readability on larger
+                        screens.
+                      </p>
+                    </div>
+
+                    <div className="bg-muted p-3 rounded-md">
+                      <p className="font-medium mb-2">Responsive Typography:</p>
+                      <pre className="text-xs overflow-x-auto p-2 bg-black text-white rounded">
+                        {`<CardTitle className="text-2xl font-bold">Greeting Generator</CardTitle>`}
+                      </pre>
+                      <p className="mt-2">
+                        Text sizes are defined using Tailwind's responsive classes to ensure readability across
+                        different device sizes.
+                      </p>
+                    </div>
+
+                    <p>
+                      Tailwind CSS uses a mobile-first approach, where styles are applied to mobile by default, and then
+                      modified for larger screens using breakpoint prefixes like{" "}
+                      <code className="text-xs bg-muted p-1 rounded">md:</code> and{" "}
+                      <code className="text-xs bg-muted p-1 rounded">lg:</code>.
+                    </p>
+                  </div>
                 </AccordionContent>
               </AccordionItem>
             </Accordion>
@@ -153,3 +409,4 @@ export default function Home() {
     </main>
   )
 }
+
